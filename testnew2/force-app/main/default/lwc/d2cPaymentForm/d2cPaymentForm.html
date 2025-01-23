@@ -1,0 +1,128 @@
+<template>
+    <div class="payment-form">
+        <lightning-card title="Payment Information">
+            <div class="slds-p-around_medium">
+                <lightning-combobox
+                    label="Payment Method"
+                    value={paymentMethod}
+                    options={paymentMethods}
+                    onchange={handlePaymentMethodChange}
+                ></lightning-combobox>
+
+                <template if:true={isCreditCard}>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1">
+                            <lightning-input
+                                type="text"
+                                label="Card Number"
+                                data-field="cardNumber"
+                                onchange={handleInputChange}
+                                pattern="[0-9]{16}"
+                                message-when-pattern-mismatch="Please enter a valid 16-digit card number"
+                                required
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-2">
+                            <lightning-input
+                                type="text"
+                                label="Expiry Month"
+                                data-field="expiryMonth"
+                                onchange={handleInputChange}
+                                pattern="[0-9]{2}"
+                                message-when-pattern-mismatch="Please enter a valid month (MM)"
+                                required
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2 slds-medium-size_1-of-2">
+                            <lightning-input
+                                type="text"
+                                label="Expiry Year"
+                                data-field="expiryYear"
+                                onchange={handleInputChange}
+                                pattern="[0-9]{2}"
+                                message-when-pattern-mismatch="Please enter a valid year (YY)"
+                                placeholder="YY"
+                                maxlength="2"
+                                required
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input
+                                type="text"
+                                label="CVV"
+                                data-field="cvv"
+                                onchange={handleInputChange}
+                                pattern="[0-9]{3,4}"
+                                message-when-pattern-mismatch="Please enter a valid CVV"
+                                required
+                            ></lightning-input>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={isTamara}>
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="text"
+                                label="First Name"
+                                data-field="firstName"
+                                onchange={handleInputChange}
+                                required
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="text"
+                                label="Last Name"
+                                data-field="lastName"
+                                onchange={handleInputChange}
+                                required
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="email"
+                                label="Email"
+                                data-field="email"
+                                onchange={handleInputChange}
+                                required
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input
+                                type="tel"
+                                label="Phone Number"
+                                data-field="phoneNumber"
+                                onchange={handleInputChange}
+                                required
+                            ></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-combobox
+                                label="Installment Plan"
+                                data-field="installmentPlan"
+                                options={installmentOptions}
+                                onchange={handleInputChange}
+                                required
+                            ></lightning-combobox>
+                        </div>
+                    </div>
+                </template>
+
+                <div class="slds-m-top_medium">
+                    <lightning-button
+                        variant="brand"
+                        label="Pay Now"
+                        onclick={handleSubmit}
+                        disabled={isLoading}
+                    ></lightning-button>
+                </div>
+            </div>
+
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Processing payment"></lightning-spinner>
+            </template>
+        </lightning-card>
+    </div>
+</template>
