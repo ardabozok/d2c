@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <label>D2C Standard Checkout Flow</label>
-    <description>D2C Commerce standard checkout flow with custom payment integration</description>
-    <interviewLabel>D2C Standard Checkout {!$Flow.CurrentDateTime}</interviewLabel>
     <decisions>
         <name>Main_Decision_Hub</name>
         <label>Main Decision Hub</label>
@@ -17,7 +14,7 @@
             <name>Error_Outcome</name>
             <conditionLogic>or</conditionLogic>
             <conditions>
-                <leftValueReference>mainCheckoutSession.IsError__c</leftValueReference>
+                <leftValueReference>mainCheckoutSession.null__NotFound</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <booleanValue>true</booleanValue>
@@ -44,6 +41,39 @@
             <label>Payment Success</label>
         </rules>
     </decisions>
+    <description>D2C Commerce standard checkout flow with custom payment integration</description>
+    <interviewLabel>D2C Standard Checkout {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>D2C Standard Checkout Flow</label>
+    <processType>Flow</processType>
+    <recordCreates>
+        <name>Place_Order</name>
+        <label>Place Order</label>
+        <locationX>169</locationX>
+        <locationY>1228</locationY>
+        <connector>
+            <targetReference>Order_Confirmation</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>AccountId</field>
+            <value>
+                <elementReference>accountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OriginalOrderId</field>
+            <value>
+                <elementReference>cartId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Draft</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Order</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
     <screens>
         <name>Error_Screen</name>
         <label>Error</label>
@@ -55,6 +85,22 @@
         <fields>
             <name>ErrorMessage</name>
             <fieldText>An error occurred during checkout. Please try again.</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Order_Confirmation</name>
+        <label>Order Confirmation</label>
+        <locationX>177</locationX>
+        <locationY>1611</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>OrderConfirmationMessage</name>
+            <fieldText>Thank you for your order! Your order number is: {!orderNumber}</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>
@@ -100,51 +146,6 @@
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
-    <screens>
-        <name>Order_Confirmation</name>
-        <label>Order Confirmation</label>
-        <locationX>177</locationX>
-        <locationY>1611</locationY>
-        <allowBack>false</allowBack>
-        <allowFinish>true</allowFinish>
-        <allowPause>false</allowPause>
-        <fields>
-            <name>OrderConfirmationMessage</name>
-            <fieldText>Thank you for your order! Your order number is: {!orderNumber}</fieldText>
-            <fieldType>DisplayText</fieldType>
-        </fields>
-        <showFooter>true</showFooter>
-        <showHeader>true</showHeader>
-    </screens>
-    <recordCreates>
-        <name>Place_Order</name>
-        <label>Place Order</label>
-        <locationX>169</locationX>
-        <locationY>1228</locationY>
-        <connector>
-            <targetReference>Order_Confirmation</targetReference>
-        </connector>
-        <inputAssignments>
-            <field>AccountId</field>
-            <value>
-                <elementReference>accountId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>OriginalOrderId</field>
-            <value>
-                <elementReference>cartId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Status</field>
-            <value>
-                <stringValue>Draft</stringValue>
-            </value>
-        </inputAssignments>
-        <object>Order</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordCreates>
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>
@@ -152,22 +153,7 @@
             <targetReference>Payment_Screen</targetReference>
         </connector>
     </start>
-    <status>Draft</status>
-    <variables>
-        <name>mainCheckoutSession</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>CartCheckoutSession</objectType>
-    </variables>
-    <variables>
-        <name>cartId</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>true</isInput>
-        <isOutput>false</isOutput>
-    </variables>
+    <status>InvalidDraft</status>
     <variables>
         <name>accountId</name>
         <dataType>String</dataType>
@@ -184,6 +170,28 @@
         <objectType>WebCart</objectType>
     </variables>
     <variables>
+        <name>cartId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>mainCheckoutSession</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>CartCheckoutSession</objectType>
+    </variables>
+    <variables>
+        <name>orderNumber</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
         <name>paymentId</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
@@ -192,13 +200,6 @@
     </variables>
     <variables>
         <name>paymentStatus</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>true</isOutput>
-    </variables>
-    <variables>
-        <name>orderNumber</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
