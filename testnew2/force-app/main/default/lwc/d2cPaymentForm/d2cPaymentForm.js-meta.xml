@@ -16,6 +16,8 @@
         <targetConfig targets="lightning__FlowScreen">
             <property name="recordId" type="String" label="Record ID" description="Record ID of the order or cart"/>
             <property name="amount" type="String" label="Amount" description="Payment amount"/>
+            <property name="paymentId" type="String" label="Payment ID" description="ID of the processed payment" role="outputOnly"/>
+            <property name="status" type="String" label="Payment Status" description="Status of the payment" role="outputOnly"/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

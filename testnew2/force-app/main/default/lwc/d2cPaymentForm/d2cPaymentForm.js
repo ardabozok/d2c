@@ -2,7 +2,7 @@ import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import processPayment from '@salesforce/apex/D2CMultiPaymentGatewayAdapter.processPayment';
 
-export default class D2CPaymentForm extends LightningElement {
+export default class D2cPaymentForm extends LightningElement {
     _amount;
     @api 
     get amount() {
@@ -13,6 +13,8 @@ export default class D2CPaymentForm extends LightningElement {
         this._amount = value;
     }
     @api recordId;
+    @api paymentId;
+    @api status;
     @track paymentMethod = 'CREDIT_CARD';
     @track isLoading = false;
     @track paymentDetails = {};
@@ -102,17 +104,16 @@ export default class D2CPaymentForm extends LightningElement {
 
             if (result.isSuccess) {
                 this.showToast('Success', 'Payment processed successfully', 'success');
-                this.dispatchEvent(new CustomEvent('paymentcomplete', {
-                    detail: {
-                        paymentId: result.paymentId,
-                        status: result.status
-                    }
-                }));
+                // Set output properties for flow
+                this.paymentId = result.paymentId;
+                this.status = 'SUCCESS';
             } else {
                 this.showToast('Error', result.message, 'error');
+                this.status = 'ERROR';
             }
         } catch (error) {
             this.showToast('Error', error.message, 'error');
+            this.status = 'ERROR';
         } finally {
             this.isLoading = false;
         }

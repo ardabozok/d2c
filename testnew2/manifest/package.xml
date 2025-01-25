@@ -26,35 +26,33 @@
     </types>
     <types>
         <members>*</members>
+        <members>d2cPaymentForm</members>
         <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>Checkout_with_D2C_Payment</members>
+        <members>D2CPaymentFlow</members>
+        <members>D2CStandardCheckoutFlow</members>
+        <name>Flow</name>
     </types>
     <types>
         <members>*</members>
         <name>StaticResource</name>
     </types>
-
-    
     <types>
         <members>PaymentTransaction__c</members>
         <name>CustomObject</name>
     </types>
-    
     <types>
         <members>PaymentTransaction__c.Amount__c</members>
         <members>PaymentTransaction__c.PaymentMethod__c</members>
         <members>PaymentTransaction__c.Status__c</members>
         <name>CustomField</name>
     </types>
-    
     <types>
         <members>CheckoutCom</members>
         <members>Tamara</members>
         <name>NamedCredential</name>
     </types>
-    
-    <types>
-        <members>d2cPaymentForm</members>
-        <name>LightningComponentBundle</name>
-    </types>
-    <version>61.0</version>
+    <version>58.0</version>
 </Package>
