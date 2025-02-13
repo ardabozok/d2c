@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>62.0</apiVersion>
+    <apiVersion>63.0</apiVersion>
     <assignments>
         <description>The loop node is here for cosmetic purposes. It helps make the flow easier to read, but is not a necessary technical component.</description>
         <name>Loop</name>
@@ -61,21 +61,6 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
         <locationX>675</locationX>
         <locationY>375</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
-        <rules>
-            <name>Guest_User_Path</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>isGuest</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Guest_Checkout_Screen</targetReference>
-            </connector>
-            <label>Guest User</label>
-        </rules>
         <rules>
             <name>Error_Outcome</name>
             <conditionLogic>or</conditionLogic>
@@ -305,11 +290,10 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
             <label>Wait Debug Outcome</label>
         </rules>
     </decisions>
-    <description>Custom checkout flow with D2C payment integration</description>
     <environments>Default</environments>
-    <interviewLabel>Checkout with D2C Payment {!$Flow.CurrentDateTime}</interviewLabel>
-    <isAdditionalPermissionRequiredToRun>true</isAdditionalPermissionRequiredToRun>
-    <label>Checkout with D2C Payment</label>
+    <interviewLabel>test_checkout_flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <isTemplate>true</isTemplate>
+    <label>test_checkout_flow</label>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -380,31 +364,6 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
         <showHeader>true</showHeader>
     </screens>
     <screens>
-        <name>Guest_Checkout_Screen</name>
-        <label>Guest Checkout</label>
-        <locationX>500</locationX>
-        <locationY>50</locationY>
-        <allowBack>true</allowBack>
-        <allowFinish>true</allowFinish>
-        <allowPause>true</allowPause>
-        <connector>
-            <targetReference>Get_Or_Create_Session_Subflow</targetReference>
-        </connector>
-        <fields>
-            <name>GuestEmailInput</name>
-            <dataType>String</dataType>
-            <fieldText>Email</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>true</isRequired>
-            <validationRule>
-                <errorMessage>Please enter a valid email address</errorMessage>
-                <formulaExpression>REGEX({!GuestEmailInput}, &apos;^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$&apos;)</formulaExpression>
-            </validationRule>
-        </fields>
-        <showFooter>true</showFooter>
-        <showHeader>true</showHeader>
-    </screens>
-    <screens>
         <description>The Wait Debug Screen node displays a version of the wait screen with debug information.</description>
         <name>Wait_Debug_Screen</name>
         <label>Wait Debug</label>
@@ -462,7 +421,11 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
         <showHeader>false</showHeader>
     </screens>
     <screens>
-        <description>The Wait Screen node displays when session.isProcessing = true</description>
+        <description>The Wait Screen node displays when session.isProcessing = true
+
+Async subflows set session.isProcessing = true before calling async invocable actions.
+
+When async invocable actions complete, they change session.isProcessing to false and set session.state to session.nextState, not the flow variable nextState.</description>
         <name>Wait_Screen</name>
         <label>Wait</label>
         <locationX>1034</locationX>
@@ -493,15 +456,14 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
         <showFooter>false</showFooter>
         <showHeader>false</showHeader>
     </screens>
-    <sourceTemplate>sfdc_checkout__CheckoutTemplate</sourceTemplate>
     <start>
         <locationX>121</locationX>
         <locationY>21</locationY>
         <connector>
-            <targetReference>Debug_Screen_Decision</targetReference>
+            <targetReference>Get_Or_Create_Session_Subflow</targetReference>
         </connector>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
     <subflows>
         <description>Calls the activateOrder synchronous invocable action to convert an order from Draft to Activated state.</description>
         <name>Activate_Order_Subflow</name>
@@ -787,7 +749,7 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
         </inputAssignments>
     </subflows>
     <subflows>
-        <description>This is the Payment and Billing Address subflow. Uses standard billing address form with custom D2C payment processing.</description>
+        <description>This is the Payment and Billing Address subflow. Pick a payment method between credit card and purchase order. Enter details, authorize and proceed to order confirmation.</description>
         <name>Payment_and_Billing_Address_Subflow</name>
         <label>Payment and Billing Address</label>
         <locationX>987</locationX>
@@ -818,24 +780,6 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
             <name>orderId</name>
             <value>
                 <elementReference>mainCheckoutSession.OrderId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>useCustomPaymentComponent</name>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>customPaymentComponentName</name>
-            <value>
-                <stringValue>c:d2cPaymentForm</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>useStandardBillingAddress</name>
-            <value>
-                <booleanValue>true</booleanValue>
             </value>
         </inputAssignments>
     </subflows>
@@ -960,13 +904,6 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
         </inputAssignments>
     </subflows>
     <variables>
-        <name>accountId</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>true</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
         <name>cartId</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
@@ -975,16 +912,6 @@ Asynchronous invocable actions set mainCheckoutSession.isProcess = True.</descri
     </variables>
     <variables>
         <name>debug</name>
-        <dataType>Boolean</dataType>
-        <isCollection>false</isCollection>
-        <isInput>true</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <booleanValue>false</booleanValue>
-        </value>
-    </variables>
-    <variables>
-        <name>isGuest</name>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
         <isInput>true</isInput>

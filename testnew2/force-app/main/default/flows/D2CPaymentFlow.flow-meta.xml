@@ -96,7 +96,7 @@
             <targetReference>PaymentScreen</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Obsolete</status>
     <variables>
         <name>paymentId</name>
         <dataType>String</dataType>

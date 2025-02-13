@@ -30,9 +30,7 @@
         <name>LightningComponentBundle</name>
     </types>
     <types>
-        <members>Checkout_with_D2C_Payment</members>
-        <members>D2CPaymentFlow</members>
-        <members>D2CStandardCheckoutFlow</members>
+        <members>*</members>
         <name>Flow</name>
     </types>
     <types>
